@@ -44,7 +44,7 @@ constexpr size_t BENCHMARK_N = 3;
 void run_benchmark(void*) {
   auto start = DWT->CYCCNT;
 
-  for (size_t i = 0; i < 5000; ++i) {
+  for (size_t i = 0; i < 1000; ++i) {
     do {
       // must check the return value and retry like this, because it could fail
       if (xSemaphoreTake(printf_semphr, portMAX_DELAY) == pdTRUE) {
@@ -99,10 +99,12 @@ void benchmark_streambuf() {
 #endif
 
   for (size_t i = 0; i < BENCHMARK_N; ++i) {
-    xTaskCreate(run_benchmark, "benchmark", configMINIMAL_STACK_SIZE, NULL,
-                osPriorityNormal, NULL);
+    configASSERT(xTaskCreate(run_benchmark, "benchmark",
+                             configMINIMAL_STACK_SIZE, NULL, osPriorityNormal,
+                             NULL) == pdPASS);
   }
-  xTaskCreate(print_benchmark, "print_bench", configMINIMAL_STACK_SIZE, NULL,
-              osPriorityNormal, NULL);
+  configASSERT(xTaskCreate(print_benchmark, "print_bench",
+                           configMINIMAL_STACK_SIZE, NULL, osPriorityNormal,
+                           NULL) == pdPASS);
 }
 }
